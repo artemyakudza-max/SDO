@@ -65,9 +65,68 @@ main {
 }
 .btn-secondary:active { background: #cbd5e1; }
 
-.preview h2 {
+.preview h2,
+.recognize h2,
+.result h2 {
   font-size: 16px;
   margin: 0 0 8px;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.lang-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 15px;
+}
+
+.lang-row select {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #d7dee6;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 15px;
+}
+
+.progress {
+  margin-top: 12px;
+}
+
+.progress-bar {
+  height: 10px;
+  border-radius: 5px;
+  background: #e2e8f0;
+  overflow: hidden;
+}
+
+#progress-fill {
+  height: 100%;
+  width: 0;
+  background: #2563eb;
+  transition: width 0.2s;
+}
+
+#progress-text {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: #5b6b7b;
+}
+
+.result textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #d7dee6;
+  border-radius: 12px;
+  background: #fff;
+  font-size: 15px;
+  line-height: 1.5;
+  resize: vertical;
 }
 
 #preview-img {

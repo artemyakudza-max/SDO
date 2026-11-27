@@ -29,8 +29,34 @@
       <img id="preview-img" alt="Предпросмотр фото">
       <button id="btn-retake" class="btn btn-secondary">↺ Другое фото</button>
     </section>
+
+    <!-- Шаг 2: распознавание текста -->
+    <section class="recognize" id="recognize-section" hidden>
+      <h2>Распознавание</h2>
+      <label class="lang-row">Язык:
+        <select id="lang-select">
+          <option value="rus+eng" selected>Русский + English</option>
+          <option value="rus">Русский</option>
+          <option value="eng">English</option>
+        </select>
+      </label>
+      <button id="btn-recognize" class="btn btn-primary">🔍 Распознать текст</button>
+      <div class="progress" id="progress-box" hidden>
+        <div class="progress-bar"><div id="progress-fill"></div></div>
+        <p id="progress-text">Подготовка…</p>
+      </div>
+    </section>
+
+    <!-- Шаг 3: результат -->
+    <section class="result" id="result-section" hidden>
+      <h2>Текст</h2>
+      <textarea id="result-text" rows="12"
+        placeholder="Здесь появится распознанный текст — его можно поправить руками"></textarea>
+    </section>
   </main>
 
+  <!-- Tesseract.js: движок распознавания, работает в браузере -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
