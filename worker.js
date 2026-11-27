@@ -5,15 +5,8 @@
 // Пускаем запросы только с нашего сайта на GitHub Pages
 const ALLOWED_ORIGIN = 'https://artemyakudza-max.github.io';
 
-// Модели, которые разрешено запрашивать с сайта (список должен совпадать с app.js)
-const ALLOWED_MODELS = new Set([
-  'google/gemini-2.5-flash',
-  'google/gemini-2.5-pro',
-  'google/gemini-3-flash-preview',
-]);
-
-// Модель по умолчанию, если с сайта не пришла
-const DEFAULT_MODEL = 'google/gemini-2.5-flash';
+// Модель распознавания на OpenRouter — меняем в одну строчку
+const MODEL = 'google/gemini-2.5-pro';
 
 // Промпт: что именно просим у AI.
 // Русский промпт с чёткими правилами улучшает чтение русского текста (в т.ч. рукописного)
@@ -22,7 +15,8 @@ const PROMPT =
   'максимально точно, буква в букву, как написано. Текст может быть ' +
   'рукописным — старайся прочитать каждое слово. Сохрани разбиение на ' +
   'строки и абзацы. Неразборчивые места помечай как [неразборчиво]. ' +
-  'НЕ добавляй комментариев, пояснений и перевода — только сам текст.';
+  'Отвечай сразу результатом: без рассуждений, без вступлений вроде ' +
+  '«Вот текст» — только сам текст письма, без комментариев и перевода.';
 
 // Ограничение размера фото (base64), чтобы не жгли токены гигантскими картинками
 const MAX_IMAGE_LENGTH = 12 * 1024 * 1024; // ~12 МБ base64
@@ -70,9 +64,6 @@ export default {
       return json({ error: 'Фото слишком большое' }, 413, cors);
     }
 
-    // Модель можно выбрать с сайта, но только из разрешённого списка
-    const model = ALLOWED_MODELS.has(body.model) ? body.model : DEFAULT_MODEL;
-
     // Запрос к OpenRouter (API совместим с OpenAI chat completions)
     const orResp = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
@@ -83,7 +74,8 @@ export default {
         'X-Title': 'Сканер корреспонденции',
       },
       body: JSON.stringify({
-        model,
+        model: MODEL,
+        reasoning: { exclude: true }, // не возвращать размышления модели
         messages: [
           {
             role: 'user',
