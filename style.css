@@ -33,9 +33,9 @@ header {
 }
 
 .vtb-logo {
-  width: 118px;
-  height: 36px;
-  margin-bottom: 12px;
+  height: 76px; /* у PNG есть прозрачные поля сверху и снизу, поэтому внешне знак меньше */
+  width: auto;
+  margin-bottom: 8px;
 }
 
 h1 {
