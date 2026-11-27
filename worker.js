@@ -75,7 +75,6 @@ export default {
       },
       body: JSON.stringify({
         model: MODEL,
-        reasoning: { exclude: true }, // не возвращать размышления модели
         messages: [
           {
             role: 'user',
@@ -85,7 +84,10 @@ export default {
             ],
           },
         ],
-        max_tokens: 4000,
+        // Лимит выходных токенов с запасом: сюда входят и «размышления» модели,
+        // поэтому лимит большой, а размышления ограничены отдельно
+        max_tokens: 16000,
+        reasoning: { exclude: true, max_tokens: 2000 },
       }),
     });
 
