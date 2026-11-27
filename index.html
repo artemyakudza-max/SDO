@@ -34,7 +34,13 @@
     <!-- Шаг 2: распознавание текста -->
     <section class="recognize" id="recognize-section" hidden>
       <h2>Распознавание</h2>
-      <label class="lang-row">Язык:
+      <label class="lang-row">Движок:
+        <select id="engine-select">
+          <option value="ai" selected>🤖 AI — точнее</option>
+          <option value="local">⚙️ Локально — бесплатно</option>
+        </select>
+      </label>
+      <label class="lang-row" id="lang-row">Язык (для локального):
         <select id="lang-select">
           <option value="rus+eng" selected>Русский + English</option>
           <option value="rus">Русский</option>

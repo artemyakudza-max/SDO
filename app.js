@@ -1,6 +1,14 @@
 // ===== Настройки (можно крутить без правки логики) =====
-const APP_VERSION = 'v0.001'; // версия — поднимаем на +1 при каждом обновлении
+const APP_VERSION = 'v0.002'; // версия — поднимаем на +1 при каждом обновлении
 const MAX_SIDE = 1600; // длинная сторона фото уменьшается до этого размера, px
+
+// AI-распознавание: запрос идёт через наш прокси (Cloudflare Worker),
+// модель и ключ настраиваются в worker.js
+const AI_PROXY_URL = ''; // адрес Worker — вставим после деплоя, вида https://...workers.dev
+const AI_PROMPT =
+  'Извлеки весь текст с изображения максимально точно, как есть. ' +
+  'Сохрани разбиение на строки и абзацы. ' +
+  'Верни только сам текст, без комментариев и пояснений.';
 
 // Версия на главном экране — видно, что сайт обновился
 document.getElementById('app-version').textContent = APP_VERSION;
@@ -12,13 +20,21 @@ const previewSection = document.getElementById('preview-section');
 const previewImg = document.getElementById('preview-img');
 const btnRetake = document.getElementById('btn-retake');
 const recognizeSection = document.getElementById('recognize-section');
+const engineSelect = document.getElementById('engine-select');
 const langSelect = document.getElementById('lang-select');
+const langRow = document.getElementById('lang-row');
 const btnRecognize = document.getElementById('btn-recognize');
 const progressBox = document.getElementById('progress-box');
 const progressFill = document.getElementById('progress-fill');
 const progressText = document.getElementById('progress-text');
 const resultSection = document.getElementById('result-section');
 const resultText = document.getElementById('result-text');
+
+// Язык нужен только для локального движка
+engineSelect.addEventListener('change', () => {
+  langRow.hidden = engineSelect.value === 'ai';
+});
+langRow.hidden = engineSelect.value === 'ai';
 
 let currentCanvas = null; // уменьшенное фото для распознавания
 let ocrWorker = null;     // движок OCR, переиспользуем между распознаваниями
@@ -91,21 +107,56 @@ async function getWorker(lang) {
 
 async function recognize() {
   if (!currentCanvas) return;
-  if (typeof Tesseract === 'undefined') {
-    throw new Error('Движок не загрузился. Проверь интернет и обнови страницу.');
-  }
   btnRecognize.disabled = true;
   progressBox.hidden = false;
   resultSection.hidden = true;
   setProgress(0, 'Подготовка…');
 
-  const worker = await getWorker(langSelect.value);
-  const { data } = await worker.recognize(currentCanvas);
+  if (engineSelect.value === 'ai') {
+    await aiRecognize();
+  } else {
+    await localRecognize();
+  }
 
-  resultText.value = data.text.trim();
   progressBox.hidden = true;
   resultSection.hidden = false;
   btnRecognize.disabled = false;
+}
+
+// Локальное распознавание Tesseract — бесплатно, качество хуже
+async function localRecognize() {
+  if (typeof Tesseract === 'undefined') {
+    throw new Error('Движок не загрузился. Проверь интернет и обнови страницу.');
+  }
+  const worker = await getWorker(langSelect.value);
+  const { data } = await worker.recognize(currentCanvas);
+  resultText.value = data.text.trim();
+}
+
+// AI-распознавание: сайт → наш прокси на Cloudflare → OpenRouter
+async function aiRecognize() {
+  if (!AI_PROXY_URL) {
+    throw new Error('AI-прокси ещё не настроен: адрес Worker не прописан в app.js');
+  }
+  setProgress(0.5, 'Отправляю фото в AI… обычно до 10 секунд');
+  const image = currentCanvas.toDataURL('image/jpeg', 0.9);
+  const resp = await fetch(AI_PROXY_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ image }),
+  });
+  const json = await resp.json().catch(() => null);
+  if (!resp.ok) {
+    const msg = json && json.error ? json.error : 'HTTP ' + resp.status;
+    throw new Error('Ошибка AI: ' + msg);
+  }
+  const text = json && json.choices && json.choices[0] && json.choices[0].message
+    ? json.choices[0].message.content
+    : '';
+  if (!text || !text.trim()) {
+    throw new Error('AI вернул пустой ответ');
+  }
+  resultText.value = text.trim();
 }
 
 function showOcrError(err) {

@@ -101,6 +101,11 @@ main {
   font-size: 15px;
 }
 
+/* hidden не срабатывает сам, потому что у .lang-row есть свой display:flex */
+.lang-row[hidden] {
+  display: none;
+}
+
 .progress {
   margin-top: 12px;
 }
