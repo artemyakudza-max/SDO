@@ -1,5 +1,5 @@
 // ===== Настройки (можно крутить без правки логики) =====
-const APP_VERSION = 'v0.010'; // версия — поднимаем на +1 при каждом обновлении
+const APP_VERSION = 'v0.011'; // версия — поднимаем на +1 при каждом обновлении
 const MAX_SIDE = 1600; // длинная сторона фото уменьшается до этого размера, px
 
 // AI-распознавание: запрос идёт через наш прокси (Cloudflare Worker),
@@ -21,6 +21,7 @@ const langSelect = document.getElementById('lang-select');
 const langRow = document.getElementById('lang-row');
 const btnRecognize = document.getElementById('btn-recognize');
 const progressBox = document.getElementById('progress-box');
+const progressBar = document.getElementById('progress-bar');
 const progressFill = document.getElementById('progress-fill');
 const progressText = document.getElementById('progress-text');
 const resultSection = document.getElementById('result-section');
@@ -114,8 +115,10 @@ async function recognize() {
     await localRecognize();
   }
 
+  stopIndeterminate();
   progressBox.hidden = true;
   resultSection.hidden = false;
+  resultSection.scrollIntoView({ behavior: 'smooth' }); // само прокручиваем к тексту
   btnRecognize.disabled = false;
 }
 
@@ -134,7 +137,7 @@ async function aiRecognize() {
   if (!AI_PROXY_URL) {
     throw new Error('AI-прокси ещё не настроен: адрес Worker не прописан в app.js');
   }
-  setProgress(0.5, 'Отправляю фото в AI… обычно до 10 секунд');
+  startIndeterminate('Обработка');
   const image = currentCanvas.toDataURL('image/jpeg', 0.9);
   const resp = await fetch(AI_PROXY_URL, {
     method: 'POST',
@@ -157,6 +160,7 @@ async function aiRecognize() {
 
 function showOcrError(err) {
   console.error(err); // подробности — в консоли браузера (F12)
+  stopIndeterminate();
   progressBox.hidden = false;
   setProgress(0, 'Ошибка: ' + err.message);
   btnRecognize.disabled = false;
@@ -177,6 +181,18 @@ function onProgress(m) {
 function setProgress(value, text) {
   progressFill.style.width = Math.round(value * 100) + '%';
   progressText.textContent = text;
+}
+
+// Полоса «идёт работа»: заполнена целиком и анимирована (когда процентов нет — как у AI)
+function startIndeterminate(text) {
+  progressBar.classList.add('running');
+  progressFill.style.width = '100%';
+  progressText.textContent = text;
+}
+
+function stopIndeterminate() {
+  progressBar.classList.remove('running');
+  progressFill.style.width = '0';
 }
 
 function hideResult() {
