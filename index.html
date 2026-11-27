@@ -3,20 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#2563eb">
+  <meta name="theme-color" content="#004CBC">
   <title>Сканер корреспонденции</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
+    <div class="brand-badge">ВТБ</div>
     <h1>Сканер корреспонденции</h1>
-    <p class="subtitle">Сфотографируйте письмо — получите текст</p>
+    <p class="subtitle">Сфотографируйте письмо — получите машиночитаемый текст</p>
     <p class="version" id="app-version"></p>
   </header>
 
   <main>
     <!-- Шаг 1: снимок -->
-    <section class="capture">
+    <section class="card capture">
       <label class="btn btn-primary" for="input-camera">📷 Сделать фото</label>
       <input type="file" id="input-camera" accept="image/*" capture="environment" hidden>
 
@@ -25,15 +26,15 @@
     </section>
 
     <!-- Предпросмотр снятого фото -->
-    <section class="preview" id="preview-section" hidden>
-      <h2>Фото</h2>
+    <section class="card preview" id="preview-section" hidden>
+      <h2><span class="step-num">1</span>Фото</h2>
       <img id="preview-img" alt="Предпросмотр фото">
       <button id="btn-retake" class="btn btn-secondary">↺ Другое фото</button>
     </section>
 
     <!-- Шаг 2: распознавание текста -->
-    <section class="recognize" id="recognize-section" hidden>
-      <h2>Распознавание</h2>
+    <section class="card recognize" id="recognize-section" hidden>
+      <h2><span class="step-num">2</span>Распознавание</h2>
       <label class="lang-row">Движок:
         <select id="engine-select">
           <option value="ai" selected>🤖 AI — точнее</option>
@@ -55,12 +56,14 @@
     </section>
 
     <!-- Шаг 3: результат -->
-    <section class="result" id="result-section" hidden>
-      <h2>Текст</h2>
+    <section class="card result" id="result-section" hidden>
+      <h2><span class="step-num">3</span>Текст</h2>
       <textarea id="result-text" rows="12"
         placeholder="Здесь появится распознанный текст — его можно поправить руками"></textarea>
     </section>
   </main>
+
+  <footer class="footer">Фото отправляется в AI-модель только для распознавания текста.</footer>
 
   <!-- Tesseract.js: движок распознавания, работает в браузере -->
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"></script>
