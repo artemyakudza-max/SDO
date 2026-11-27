@@ -4,14 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#004CBC">
-  <title>Сканер корреспонденции</title>
+  <title>Сканер Кондратьева</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
-    <div class="brand-badge">ВТБ</div>
-    <h1>Сканер корреспонденции</h1>
-    <p class="subtitle">Сфотографируйте письмо — получите машиночитаемый текст</p>
+    <!-- Логотип ВТБ: три фирменные линии (циан) + надпись, как на vtb.ru -->
+    <svg class="vtb-logo" viewBox="0 0 132 40" role="img" aria-label="ВТБ">
+      <g fill="#23AAFD" transform="skewX(-20)">
+        <rect x="18" y="4" width="7" height="32"/>
+        <rect x="30" y="4" width="7" height="32"/>
+        <rect x="42" y="4" width="7" height="32"/>
+      </g>
+      <text x="56" y="30" fill="#fff" font-size="27" font-weight="700"
+        font-family="Arial, sans-serif">ВТБ</text>
+    </svg>
+    <h1>Сканер Кондратьева</h1>
+    <p class="subtitle">Сфотографируйте бумажную корреспонденцию для автоматического распознавания,
+      автоматической регистрации в СДО и автоматического формирования необходимого маршрута
+      в зависимости от типа и контекста документа</p>
     <p class="version" id="app-version"></p>
   </header>
 
@@ -63,7 +74,6 @@
     </section>
   </main>
 
-  <footer class="footer">Фото отправляется в AI-модель только для распознавания текста.</footer>
 
   <!-- Tesseract.js: движок распознавания, работает в браузере -->
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"></script>
