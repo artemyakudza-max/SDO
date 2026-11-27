@@ -5,14 +5,24 @@
 // Пускаем запросы только с нашего сайта на GitHub Pages
 const ALLOWED_ORIGIN = 'https://artemyakudza-max.github.io';
 
-// Модель распознавания на OpenRouter
-const MODEL = 'google/gemini-2.5-flash';
+// Модели, которые разрешено запрашивать с сайта (список должен совпадать с app.js)
+const ALLOWED_MODELS = new Set([
+  'google/gemini-2.5-flash',
+  'google/gemini-2.5-pro',
+  'google/gemini-3-flash-preview',
+]);
 
-// Промпт: что именно просим у AI
+// Модель по умолчанию, если с сайта не пришла
+const DEFAULT_MODEL = 'google/gemini-2.5-flash';
+
+// Промпт: что именно просим у AI.
+// Русский промпт с чёткими правилами улучшает чтение русского текста (в т.ч. рукописного)
 const PROMPT =
-  'Извлеки весь текст с изображения максимально точно, как есть. ' +
-  'Сохрани разбиение на строки и абзацы. ' +
-  'Верни только сам текст, без комментариев и пояснений.';
+  'Ты — точный транскрибатор текстов. Извлеки ВЕСЬ текст с изображения ' +
+  'максимально точно, буква в букву, как написано. Текст может быть ' +
+  'рукописным — старайся прочитать каждое слово. Сохрани разбиение на ' +
+  'строки и абзацы. Неразборчивые места помечай как [неразборчиво]. ' +
+  'НЕ добавляй комментариев, пояснений и перевода — только сам текст.';
 
 // Ограничение размера фото (base64), чтобы не жгли токены гигантскими картинками
 const MAX_IMAGE_LENGTH = 12 * 1024 * 1024; // ~12 МБ base64
@@ -60,6 +70,9 @@ export default {
       return json({ error: 'Фото слишком большое' }, 413, cors);
     }
 
+    // Модель можно выбрать с сайта, но только из разрешённого списка
+    const model = ALLOWED_MODELS.has(body.model) ? body.model : DEFAULT_MODEL;
+
     // Запрос к OpenRouter (API совместим с OpenAI chat completions)
     const orResp = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
@@ -70,7 +83,7 @@ export default {
         'X-Title': 'Сканер корреспонденции',
       },
       body: JSON.stringify({
-        model: MODEL,
+        model,
         messages: [
           {
             role: 'user',

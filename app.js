@@ -1,14 +1,16 @@
 // ===== Настройки (можно крутить без правки логики) =====
-const APP_VERSION = 'v0.003'; // версия — поднимаем на +1 при каждом обновлении
+const APP_VERSION = 'v0.004'; // версия — поднимаем на +1 при каждом обновлении
 const MAX_SIDE = 1600; // длинная сторона фото уменьшается до этого размера, px
 
 // AI-распознавание: запрос идёт через наш прокси (Cloudflare Worker),
 // модель и ключ настраиваются в worker.js
 const AI_PROXY_URL = 'https://sdo.artem-yakudza.workers.dev'; // наш прокси на Cloudflare
-const AI_PROMPT =
-  'Извлеки весь текст с изображения максимально точно, как есть. ' +
-  'Сохрани разбиение на строки и абзацы. ' +
-  'Верни только сам текст, без комментариев и пояснений.';
+// Модели AI для выпадающего списка (должны совпадать со списком ALLOWED_MODELS в worker.js)
+const AI_MODELS = [
+  { id: 'google/gemini-2.5-flash', name: 'Gemini 2.5 Flash — быстро и дёшево' },
+  { id: 'google/gemini-2.5-pro', name: 'Gemini 2.5 Pro — максимум качества' },
+  { id: 'google/gemini-3-flash-preview', name: 'Gemini 3 Flash — новее, чуть дороже' },
+];
 
 // Версия на главном экране — видно, что сайт обновился
 document.getElementById('app-version').textContent = APP_VERSION;
@@ -23,6 +25,8 @@ const recognizeSection = document.getElementById('recognize-section');
 const engineSelect = document.getElementById('engine-select');
 const langSelect = document.getElementById('lang-select');
 const langRow = document.getElementById('lang-row');
+const aiModelSelect = document.getElementById('ai-model-select');
+const aiModelRow = document.getElementById('ai-model-row');
 const btnRecognize = document.getElementById('btn-recognize');
 const progressBox = document.getElementById('progress-box');
 const progressFill = document.getElementById('progress-fill');
@@ -30,11 +34,22 @@ const progressText = document.getElementById('progress-text');
 const resultSection = document.getElementById('result-section');
 const resultText = document.getElementById('result-text');
 
-// Язык нужен только для локального движка
-engineSelect.addEventListener('change', () => {
-  langRow.hidden = engineSelect.value === 'ai';
-});
-langRow.hidden = engineSelect.value === 'ai';
+// Показываем настройки выбранного движка: языки — для локального, модель — для AI
+function updateEngineRows() {
+  const isAi = engineSelect.value === 'ai';
+  langRow.hidden = isAi;
+  aiModelRow.hidden = !isAi;
+}
+engineSelect.addEventListener('change', updateEngineRows);
+
+// Заполняем список моделей AI из настроек
+for (const m of AI_MODELS) {
+  const opt = document.createElement('option');
+  opt.value = m.id;
+  opt.textContent = m.name;
+  aiModelSelect.appendChild(opt);
+}
+updateEngineRows();
 
 let currentCanvas = null; // уменьшенное фото для распознавания
 let ocrWorker = null;     // движок OCR, переиспользуем между распознаваниями
@@ -143,7 +158,7 @@ async function aiRecognize() {
   const resp = await fetch(AI_PROXY_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ image }),
+    body: JSON.stringify({ image, model: aiModelSelect.value }),
   });
   const json = await resp.json().catch(() => null);
   if (!resp.ok) {
