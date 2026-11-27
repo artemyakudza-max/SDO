@@ -153,28 +153,6 @@ main {
 .preview .btn { margin-top: 12px; }
 
 /* ===== Формы ===== */
-.lang-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
-  font-size: 15px;
-}
-
-/* hidden не срабатывает сам, потому что у .lang-row есть свой display:flex */
-.lang-row[hidden] { display: none; }
-
-.lang-row select {
-  flex: 1;
-  padding: 11px 12px;
-  border: 1.5px solid var(--border);
-  border-radius: 10px;
-  background: #fff;
-  color: var(--text);
-  font-size: 15px;
-}
-
-.lang-row select:focus,
 .result textarea:focus {
   outline: none;
   border-color: var(--vtb-blue);

@@ -1,5 +1,5 @@
 // ===== Настройки (можно крутить без правки логики) =====
-const APP_VERSION = 'v0.011'; // версия — поднимаем на +1 при каждом обновлении
+const APP_VERSION = 'v0.012'; // версия — поднимаем на +1 при каждом обновлении
 const MAX_SIDE = 1600; // длинная сторона фото уменьшается до этого размера, px
 
 // AI-распознавание: запрос идёт через наш прокси (Cloudflare Worker),
@@ -16,9 +16,6 @@ const previewSection = document.getElementById('preview-section');
 const previewImg = document.getElementById('preview-img');
 const btnRetake = document.getElementById('btn-retake');
 const recognizeSection = document.getElementById('recognize-section');
-const engineSelect = document.getElementById('engine-select');
-const langSelect = document.getElementById('lang-select');
-const langRow = document.getElementById('lang-row');
 const btnRecognize = document.getElementById('btn-recognize');
 const progressBox = document.getElementById('progress-box');
 const progressBar = document.getElementById('progress-bar');
@@ -27,15 +24,7 @@ const progressText = document.getElementById('progress-text');
 const resultSection = document.getElementById('result-section');
 const resultText = document.getElementById('result-text');
 
-// Язык нужен только для локального движка
-engineSelect.addEventListener('change', () => {
-  langRow.hidden = engineSelect.value === 'ai';
-});
-langRow.hidden = engineSelect.value === 'ai';
-
 let currentCanvas = null; // уменьшенное фото для распознавания
-let ocrWorker = null;     // движок OCR, переиспользуем между распознаваниями
-let workerLang = null;    // язык, на котором создан движок
 
 // ===== Шаг 1: фото =====
 inputCamera.addEventListener('change', () => handleFile(inputCamera.files[0]));
@@ -93,15 +82,6 @@ btnRetake.addEventListener('click', () => {
 // ===== Шаг 2: распознавание (OCR) =====
 btnRecognize.addEventListener('click', () => recognize().catch(showOcrError));
 
-// Движок создаётся один раз и живёт дальше; при смене языка — пересоздаётся
-async function getWorker(lang) {
-  if (ocrWorker && workerLang === lang) return ocrWorker;
-  if (ocrWorker) await ocrWorker.terminate();
-  ocrWorker = await Tesseract.createWorker(lang, 1, { logger: onProgress });
-  workerLang = lang;
-  return ocrWorker;
-}
-
 async function recognize() {
   if (!currentCanvas) return;
   btnRecognize.disabled = true;
@@ -109,27 +89,13 @@ async function recognize() {
   resultSection.hidden = true;
   setProgress(0, 'Подготовка…');
 
-  if (engineSelect.value === 'ai') {
-    await aiRecognize();
-  } else {
-    await localRecognize();
-  }
+  await aiRecognize();
 
   stopIndeterminate();
   progressBox.hidden = true;
   resultSection.hidden = false;
   resultSection.scrollIntoView({ behavior: 'smooth' }); // само прокручиваем к тексту
   btnRecognize.disabled = false;
-}
-
-// Локальное распознавание Tesseract — бесплатно, качество хуже
-async function localRecognize() {
-  if (typeof Tesseract === 'undefined') {
-    throw new Error('Движок не загрузился. Проверь интернет и обнови страницу.');
-  }
-  const worker = await getWorker(langSelect.value);
-  const { data } = await worker.recognize(currentCanvas);
-  resultText.value = data.text.trim();
 }
 
 // AI-распознавание: сайт → наш прокси на Cloudflare → OpenRouter
@@ -164,18 +130,6 @@ function showOcrError(err) {
   progressBox.hidden = false;
   setProgress(0, 'Ошибка: ' + err.message);
   btnRecognize.disabled = false;
-}
-
-// Прогресс: Tesseract присылает статусы и долю выполнения 0…1
-function onProgress(m) {
-  const ru = {
-    'loading tesseract core': 'Загружаю движок…',
-    'initializing tesseract': 'Запускаю движок…',
-    'loading language traineddata': 'Скачиваю языковые данные…',
-    'initializing api': 'Подготовка…',
-    'recognizing text': 'Распознаю текст…',
-  };
-  setProgress(m.progress || 0, ru[m.status] || m.status);
 }
 
 function setProgress(value, text) {

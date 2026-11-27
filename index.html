@@ -38,19 +38,6 @@
     <!-- Шаг 2: распознавание текста -->
     <section class="card recognize" id="recognize-section" hidden>
       <h2><span class="step-num">2</span>Распознавание</h2>
-      <label class="lang-row">Движок:
-        <select id="engine-select">
-          <option value="ai" selected>🤖 AI — точнее</option>
-          <option value="local">⚙️ Локально — бесплатно</option>
-        </select>
-      </label>
-      <label class="lang-row" id="lang-row">Язык (для локального):
-        <select id="lang-select">
-          <option value="rus+eng" selected>Русский + English</option>
-          <option value="rus">Русский</option>
-          <option value="eng">English</option>
-        </select>
-      </label>
       <button id="btn-recognize" class="btn btn-primary">🔍 Распознать текст</button>
       <div class="progress" id="progress-box" hidden>
         <div class="progress-bar" id="progress-bar"><div id="progress-fill"></div></div>
@@ -67,8 +54,6 @@
   </main>
 
 
-  <!-- Tesseract.js: движок распознавания, работает в браузере -->
-  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
