@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#2563eb">
+  <title>Сканер корреспонденции</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Сканер корреспонденции</h1>
+    <p class="subtitle">Сфотографируйте письмо — получите текст</p>
+  </header>
+
+  <main>
+    <!-- Шаг 1: снимок -->
+    <section class="capture">
+      <label class="btn btn-primary" for="input-camera">📷 Сделать фото</label>
+      <input type="file" id="input-camera" accept="image/*" capture="environment" hidden>
+
+      <label class="btn btn-secondary" for="input-gallery">🖼 Выбрать из галереи</label>
+      <input type="file" id="input-gallery" accept="image/*" hidden>
+    </section>
+
+    <!-- Предпросмотр снятого фото -->
+    <section class="preview" id="preview-section" hidden>
+      <h2>Фото</h2>
+      <img id="preview-img" alt="Предпросмотр фото">
+      <button id="btn-retake" class="btn btn-secondary">↺ Другое фото</button>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

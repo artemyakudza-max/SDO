@@ -1,0 +1,82 @@
+/* Сканер корреспонденции — стили. Мобильный-first. */
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: #f4f6f8;
+  color: #1c2733;
+}
+
+header {
+  padding: 24px 16px 8px;
+  text-align: center;
+}
+
+h1 {
+  margin: 0 0 4px;
+  font-size: 24px;
+}
+
+.subtitle {
+  margin: 0;
+  color: #5b6b7b;
+  font-size: 14px;
+}
+
+main {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.capture {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.btn {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: 12px;
+  font-size: 17px;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.btn-primary {
+  background: #2563eb;
+  color: #fff;
+}
+.btn-primary:active { background: #1d4ed8; }
+
+.btn-secondary {
+  background: #e2e8f0;
+  color: #1c2733;
+}
+.btn-secondary:active { background: #cbd5e1; }
+
+.preview h2 {
+  font-size: 16px;
+  margin: 0 0 8px;
+}
+
+#preview-img {
+  width: 100%;
+  display: block;
+  border-radius: 12px;
+  border: 1px solid #d7dee6;
+}
+
+.preview .btn {
+  margin-top: 12px;
+}
