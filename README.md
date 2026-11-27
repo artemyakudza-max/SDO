@@ -4,19 +4,13 @@
 Распознавание (OCR) идёт прямо в браузере через Tesseract.js — фото никуда не отправляется.
 
 ## Открыть с телефона
-После включения GitHub Pages сайт доступен по адресу:
-`https://<твой-логин>.github.io/<имя-репозитория>/`
+https://artemyakudza-max.github.io/SDO/
 
 ## Как выложить на GitHub Pages (один раз)
-1. Зайди на https://github.com/new
-2. Repository name: например `correspondence-scanner`. Public. Нажми **Create repository**.
-3. В терминале в папке проекта:
-   ```
-   git remote add origin https://github.com/<твой-логин>/correspondence-scanner.git
-   git push -u origin main
-   ```
-4. На сайте репозитория: **Settings → Pages → Branch: main, папка / (root) → Save**.
-5. Через 1–2 минуты сайт откроется по ссылке из пункта выше.
+1. Репозиторий: https://github.com/artemyakudza-max/SDO
+2. Загрузить код: `git push -u origin main`
+3. На сайте репозитория: **Settings → Pages → Branch: main, папка / (root) → Save**.
+4. Через 1–2 минуты сайт откроется по ссылке из пункта выше.
 
 ## Как обновлять сайт
 ```
