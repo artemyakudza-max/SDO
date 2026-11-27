@@ -1,5 +1,9 @@
 // ===== Настройки (можно крутить без правки логики) =====
+const APP_VERSION = 'v0.001'; // версия — поднимаем на +1 при каждом обновлении
 const MAX_SIDE = 1600; // длинная сторона фото уменьшается до этого размера, px
+
+// Версия на главном экране — видно, что сайт обновился
+document.getElementById('app-version').textContent = APP_VERSION;
 
 // ===== Элементы страницы =====
 const inputCamera = document.getElementById('input-camera');
